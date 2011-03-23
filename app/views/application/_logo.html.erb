@@ -1,0 +1,14 @@
+var crowfly = ge.createIcon('');
+crowfly.setHref('http://crowfly.co/images/logo_white.png');
+var crowflyLogo = ge.createScreenOverlay('');
+crowflyLogo.setIcon(crowfly);
+crowflyLogo.getOverlayXY().setXUnits(ge.UNITS_INSET_PIXELS);
+crowflyLogo.getOverlayXY().setYUnits(ge.UNITS_PIXELS);
+crowflyLogo.getOverlayXY().setX(100);
+crowflyLogo.getOverlayXY().setY(100);
+crowflyLogo.getSize().setXUnits(ge.UNITS_PIXELS);
+crowflyLogo.getSize().setYUnits(ge.UNITS_PIXELS);
+crowflyLogo.getSize().setX(123/1000);
+crowflyLogo.getSize().setX(179.333333);
+crowflyLogo.getSize().setY(48.666667);
+ge.getFeatures().appendChild(crowflyLogo);

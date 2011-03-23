@@ -1,0 +1,30 @@
+<%= form_for [@user, @geofile], :html => { :class => "form", :multipart => true } do |f| %>
+  <div id="form">
+    <div class="field">
+      <%= f.label :name %><br />
+      <%= f.text_field :name %>
+    </div>        
+    <div class="field">
+      Upload your kml/kmz file:<br />
+      <% unless @geofile.kml_file_name.nil? %>
+        <span class="ghost">Current: <%= @geofile.kml_file_name %></span><br />
+      <% end %>
+      <%= f.file_field :kml %>
+    </div>
+    <div class="field">
+      Or link to a hosted file:<br />
+      <%= f.text_field :link %>
+      <div id="warning">(this will supercede an uploaded file)</div>
+    </div>                
+    Include in your viewer(s)
+    <% @viewers.each do |viewer| %>
+      <div class="viewer-box" style="margin: 5px 10px; background-color: white; padding:5px 10px; line-height: 1em;">
+        <%= check_box_tag :viewer_ids, viewer.id, @geofile.viewers.include?(viewer), :name => 'geofile[viewer_ids][]' %>
+        <%= label_tag :viewer_ids, viewer.title %>
+      </div>
+    <% end %>
+  </div>
+  <div class="submit">
+    <%= image_submit_tag('clear.png') %>
+  </div>
+<% end %>

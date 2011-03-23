@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+		<title>CrowFly | Account Confirmation</title>
+  	<style type="text/css">
+  		body{
+  			background-color:#333;
+  		}
+  		a,a:link,a:visited{
+  			color:#85AAD7;
+  			text-decoration:underline;
+  			font-weight:normal;
+  		}
+      a:hover{
+        color: gray;
+      }
+      a:active{
+        color: #333;
+      }
+  		#content-wrap{
+  			color:#333;
+  			font-style:normal;
+  			font-weight:normal;
+  			font-family:Helvetica;
+  			line-height:1.25em;
+  			background-color:#e0e0e0;
+  		}
+  		#content{
+  			margin:10px;
+        background-color:#ffffff;
+  			padding:20px;
+  			text-align:center;
+  			font-size:16px;
+      }
+      #logo{
+        height: 73px;
+        width: 276px;
+      }
+      #greeting{
+        color: gray;
+        height: 73px;
+        width: 276px;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 10px 0 0 0;
+      }
+      #message{
+        width: 590px;
+      }
+  		#layout{
+  			margin:50px auto;
+  			text-align:left;
+  			border-collapse:collapse;
+  		}
+    </style>
+  </head>
+	<body style="background-color: #333;">
+		<table id="layout" border="0" cellspacing="0" cellpadding="0" width="600" style="margin: 50px auto;text-align: left;border-collapse: collapse;">
+			<tr>
+        <td id="content-wrap" style="color: #333;font-style: normal;font-weight: normal;font-family: Helvetica;line-height: 1.25em;background-color: #F0F0F0;">
+  				<table id="content" style="margin: 10px 10px 0 10px;background-color: #ffffff;padding: 20px;text-align: center;font-size: 16px;">
+            <tr>
+              <td id="logo" style="height:73px;width:276px;">
+                <%= image_tag('http://crowfly.co/images/logo_small.png') %>
+              </td>
+              <td id="greeting" style="color:gray;height:73px;width:276px;padding:10px 0 0 0;">
+                Welcome <%= @user.first_name %>!
+              </td>
+            </tr>
+          </table>
+          <table id="content" style="margin: 0 10px 10px 10px;background-color: #ffffff;padding: 20px;text-align: center;font-size: 16px;">
+            <tr>
+              <td id="message" style="width:590px">
+                <p>Your account has been locked due to an excessive amount<br />of unsuccessful sign in attempts.</p>
+                <p>Click the link below to unlock your account:</p>
+                <p><%= link_to 'Unlock my account', unlock_url(@resource, :unlock_token => @resource.unlock_token) %></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+		</table>
+		<span style="padding: 0px;"></span>
+	</body>
+</html>

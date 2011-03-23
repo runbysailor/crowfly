@@ -1,0 +1,289 @@
+<head>
+  <title>CrowFly</title>
+  <%= stylesheet_link_tag 'application' %>
+  <script src="http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA"></script>            
+  <%= javascript_include_tag 'jquery', 'jquery-ui', 'ge', 'inputs', 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    function initCB(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+      
+      <%= render '/application/logo' %>      
+      var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);
+      ge.getOptions().setAtmosphereVisibility(true);
+      ge.getOptions().setScaleLegendVisibility(true);
+      ge.getOptions().setFlyToSpeed(1.0);
+      ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, true);
+      cam.setAltitude(21336000);
+      cam.setLatitude(35.217768);
+      cam.setLongitude(-97.495151);
+      cam.setHeading(0);
+      cam.setTilt(0);
+      ge.getView().setAbstractView(cam);
+      
+      google.earth.addEventListener(ge.getView(), 'viewchangeend', function() {
+        if (document.getElementById('inputs').style.display==="block") {
+        } else {
+          $("#loading").fadeOut(500, function() {
+            $("#inputs").slideDown(500);
+          });
+          $("#point_latitude").val("");
+          $("#point_longitude").val("");
+        }
+      });
+      
+      google.earth.addEventListener(ge.getView(), 'viewchange', function() {
+        var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);
+        var Latitude = cam.getLatitude();
+        var Longitude = cam.getLongitude();
+        document.getElementById('overlay_north').style.backgroundImage="none";
+        document.getElementById('overlay_south').style.backgroundImage="none";
+        document.getElementById('overlay_east').style.backgroundImage="none";
+        document.getElementById('overlay_west').style.backgroundImage="none";
+      });
+    }
+    
+    function addOverlay() {
+      if (document.getElementById('overlay_north').value==='') {
+        var la = ge.getView().copyAsLookAt(ge.ALTITUDE_RELATIVE_TO_GROUND);
+        var lat = la.getLatitude();
+        var lon = la.getLongitude();
+        var north = lat+0.001;
+        var south = lat-0.001;
+        var east = lon+0.001;
+        var west = lon-0.001;
+        var overlay = ge.createGroundOverlay('');
+        var image = ge.createIcon('');
+        image.setHref('http://crowfly.co/images/position.png');
+        overlay.setIcon(image);
+        var bounds = ge.createLatLonBox('');
+        bounds.setBox(north, south, east, west, 0);
+        overlay.setLatLonBox(bounds);
+        ge.getFeatures().appendChild(overlay);
+        document.getElementById('overlay_north').value=overlay.getLatLonBox().getNorth().toFixed(6);
+        document.getElementById('overlay_south').value=overlay.getLatLonBox().getSouth().toFixed(6);
+        document.getElementById('overlay_east').value=overlay.getLatLonBox().getEast().toFixed(6);
+        document.getElementById('overlay_west').value=overlay.getLatLonBox().getWest().toFixed(6);
+        
+        var north_bound = ge.createPlacemark('');
+        var south_bound = ge.createPlacemark('');
+        var east_bound = ge.createPlacemark('');
+        var west_bound = ge.createPlacemark('');
+        ge.getFeatures().appendChild(north_bound);
+        ge.getFeatures().appendChild(south_bound);
+        ge.getFeatures().appendChild(east_bound);
+        ge.getFeatures().appendChild(west_bound);
+        var icon = ge.createIcon('');
+        icon.setHref('http://crowfly.co/images/cross.png');
+        var style = ge.createStyle('');
+        style.getIconStyle().setIcon(icon);
+        north_bound.setStyleSelector(style);
+        south_bound.setStyleSelector(style);
+        east_bound.setStyleSelector(style);
+        west_bound.setStyleSelector(style);
+        var north_point = ge.createPoint('');
+        north_point.setLatitude(north);
+        north_point.setLongitude(lon);
+        north_bound.setGeometry(north_point);
+        var south_point = ge.createPoint('');
+        south_point.setLatitude(south);
+        south_point.setLongitude(lon);
+        south_bound.setGeometry(south_point);
+        var east_point = ge.createPoint('');
+        east_point.setLatitude(lat);
+        east_point.setLongitude(east);
+        east_bound.setGeometry(east_point);
+        var west_point = ge.createPoint('');
+        west_point.setLatitude(lat);
+        west_point.setLongitude(west);
+        west_bound.setGeometry(west_point);
+        
+        google.earth.addEventListener(ge.getWindow(), 'mousedown', function(event) {
+          if (event.getTarget().getType() == 'KmlPlacemark' &&
+          event.getTarget().getGeometry().getType() == 'KmlPoint') {
+            var placemark = event.getTarget();
+            dragInfo = {
+              placemark: event.getTarget(),
+              dragged: false
+            };
+          }
+        });
+        google.earth.addEventListener(ge.getGlobe(), 'mousemove', function(event) {
+          if (dragInfo) {
+            event.preventDefault();
+            var point = dragInfo.placemark.getGeometry();
+            point.setLatitude(event.getLatitude());
+            point.setLongitude(event.getLongitude());
+            overlay.setLatLonBox(bounds);
+            new_north = north_point.getLatitude();
+            new_south = south_point.getLatitude();
+            new_east = east_point.getLongitude();
+            new_west = west_point.getLongitude();
+            document.getElementById('overlay_north').value=new_north.toFixed(6);
+            document.getElementById('overlay_south').value=new_south.toFixed(6);
+            document.getElementById('overlay_east').value=new_east.toFixed(6);
+            document.getElementById('overlay_west').value=new_west.toFixed(6);
+            bounds.setBox(new_north, new_south, new_east, new_west, 0);
+            dragInfo.dragged = true;
+          }
+        });
+        google.earth.addEventListener(ge.getWindow(), 'mouseup', function(event) {
+          if (dragInfo) {
+            if (dragInfo.dragged) {
+              event.preventDefault();
+            }
+            dragInfo = null;
+          }
+        });
+      } else {
+        hideNotice();
+        displayNotice();
+        $(".message").html("<p>Please drag the existing overlay. You can add other overlays after you save this one.</p>");
+      }
+    }
+    
+    function setOverlay() {
+      addOverlay();
+    }
+    
+    google.load("maps", "2");
+    
+    function buttonClick() {
+      var geocodeLocation = document.getElementById('search').value;
+      
+      var geocoder = new google.maps.ClientGeocoder();
+      geocoder.getLatLng(geocodeLocation, function(point) {
+        if (point) {
+          var lookAt = ge.createLookAt('');
+          lookAt.set(point.y, point.x, 0, ge.ALTITUDE_RELATIVE_TO_GROUND,
+                     0, 0, 20000);
+          ge.getView().setAbstractView(lookAt);
+        }
+      });
+    }
+  </script>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if @overlay.errors.any? || flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <% @overlay.errors.full_messages.each do |msg| %>
+              <p><%= msg %>.</p>
+            <% end %>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="dormant"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="active"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>
+        </div>
+        <div id="panel-content">
+          <%= form_for [@user, @overlay], :html => { :multipart => true } do |f| %>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('one.png') %>
+              </div>
+              <div class="step-field">
+                <p>NAME</p>
+                <%= f.text_field :name, :size => "35" %>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('two.png') %>
+              </div>
+              <div class="step-field">
+                <p>ADD AN IMAGE</p>
+                <%= f.file_field :image %>              
+              </div>
+            </div>    
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('three.png') %>
+              </div>
+              <div class="step-field">
+                <p>INCLUDE IN YOUR viewer(s)</p>
+                <% @viewers.each do |viewer| %>
+                <%= check_box_tag :viewer_ids, viewer.id, @overlay.viewers.include?(viewer), :name => 'overlay[viewer_ids][]' %> <%= label_tag :viewer_ids, viewer.title %><br />
+                <% end %>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('four.png') %>
+              </div>
+              <div class="step-field">
+                <p>FIND LOCATION</p>
+                <input id="search" type="text" onkeypress="return preventEnter(this, event)"/><input id="find-location" type="button" value="Fly To" onClick="buttonClick()"><br />
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('five.png') %>
+              </div>
+              <div class="step-field">
+                <p>ADD YOUR POINT</p>
+                <input id="set-overlay" type="button" value="Generate Overlay" onClick="setOverlay()">
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('six.png') %>
+              </div>
+              <div class="step-field">
+                <div id="loading">
+                  <%= image_tag('black-loading.gif') %>
+                </div>
+                <div id="inputs">
+                  <div class="input">
+                    <p>NORTH</p><%= f.text_field :north, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>SOUTH</p><%= f.text_field :south, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>EAST</p><%= f.text_field :east, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>WEST</p><%= f.text_field :west, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="save">
+                    <%= image_tag('clear.png', {:onClick => 'submitForm()'}) %>
+                  </div>
+                </div>
+              </div>            
+            </div>
+          <% end %>
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Fly to your location and zoom in before you generate your overlay.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="plugin">
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

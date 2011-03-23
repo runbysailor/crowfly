@@ -1,0 +1,34 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults %>
+  <%= stylesheet_link_tag 'devise' %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">      
+      <div id="left-panel">                
+      </div>
+      <div id="right-panel">
+        <div id="frame">    
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

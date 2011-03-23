@@ -1,0 +1,179 @@
+html {
+  height: 100%;
+}
+
+body {  
+  background-color: #333;  
+  height: 100% !important;
+  width: 100% !important;
+  overflow: hidden;
+  text-align: center;
+}
+
+body, p {
+  color: #333;
+  padding: 0;
+  margin: 0;
+  font-family: verdana, arial, helvetica, sans-serif;  
+  font-size: 0.8em;
+  line-height: 2.1em;  
+}
+
+a { 
+  color: #85AAD7;
+  text-decoration: none; 
+}
+
+a:visited { color: #85AAD7; }
+a:active { color: #FFF; }
+a:hover { color: #333; }
+
+img { vertical-align: middle; border-style: none;}
+
+#loading {
+  margin: 20% auto;
+}
+
+#communication {
+  margin: 10px;
+  display: none;
+  color: #F0F0F0;
+}
+
+#background {
+  display: none;
+  position: absolute;  
+}
+
+#background img {
+  width: 100%;
+}
+
+#wrapper {
+  display: none;
+  position: relative;
+  min-height: 100%;
+  height: auto !important;
+}
+
+#notice {
+  text-align: center;  
+  clear: both;
+  display: none;  
+  background-color: #85AAD7;
+  width: 100%;
+  line-height: 3em;
+  height: 3em;
+  z-index: 80;
+  padding: 10px 0 0 0;
+}
+
+#notice p {
+  display: inline;
+  position: relative;
+  padding: 0 0 0 10px;
+  font-size: 1em;
+  color: #FFF;
+}
+
+.close {  
+  position: fixed;
+  line-height:2em;
+  right: 0;
+  top: 10;
+  padding: 0 20px;
+}
+
+.close a {
+  color: #FFF;
+  text-decoration: none;
+}
+
+.close a:hover { color: #333; }
+
+#signin {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+}
+
+#logo {
+  padding: 0 0 100px 0;  
+}
+
+#links {
+  text-align: center;
+  float: left;
+  width: 150px;
+  padding: 0 5px;
+  margin: 5px auto 0 auto;
+  color: gray;
+}
+
+#links a {
+  color: white;
+}
+
+#links a:hover {
+  color: #85AAD7;
+}
+
+#copy {
+  background-image: url(copy.png);
+  background-repeat: no-repeat;
+  position: relative;
+  width: 800px;
+  height: 280px;
+  font-size: 1.3em;
+  margin: auto;
+}
+
+#signup {
+  padding: 20px;
+}
+
+p.copy {
+  position: relative;
+  color: #FFF;
+  font-size: 2.2em;
+  font-weight: bold;
+}
+
+#prospect_email {
+  padding: 5px;
+  text-align: center;
+  color: #333;
+}
+
+#prospect_submit {
+  background-image: url(learnmore.png);
+  background-repeat: no-repeat;
+  margin: 10px auto;
+  height: 30px;
+  width: 120px;
+}
+
+#prospect_submit:hover {
+  background-position: 0 -30px;
+}
+
+#footer {
+  position: absolute;
+  bottom: 0;
+  background-color: #F0F0F0;  
+  height: 100px;
+  width: 100%;
+}
+
+#footer p {
+  padding: 20px 0 10px 0;
+}
+
+a.rbs {
+  color: #333;
+}
+
+a.rbs:hover {
+  color: #85AAD7;
+}

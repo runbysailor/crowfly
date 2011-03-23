@@ -1,0 +1,34 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults, 'public' %>
+  <%= stylesheet_link_tag 'public' %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="loading">
+    <%= image_tag('loading-background.gif') %>
+    <br />
+    <div id="communication">
+      LOADING
+    </div>
+  </div>
+  <div id="background">
+    <%= image_tag('background.jpg', {:onload => 'proceed()'}) %>
+  </div>  
+  <div id="wrapper">
+    <div id="signin">
+      <% if user_signed_in? %>
+        <%= link_to current_user.company_name, "/" + current_user.company_name %>
+      <% else %>
+        <%= link_to "Sign In", new_user_session_path %>
+      <% end %>
+    </div>
+    <div id="logo">
+      <%= image_tag('logo_large.png') %>
+    </div>
+    <div id="copy">  
+      <%= yield %> 
+    </div>
+    <%= render '/application/footer'%>
+  </div>
+</body>

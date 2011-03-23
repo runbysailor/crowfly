@@ -1,0 +1,13 @@
+<h1>Prospects</h1>
+<br />
+<ul id="list">
+  <% @prospects.each do |p| %>      
+    <% if p.invited == true %>
+      <span style="color:green;">invited</span> | 
+    <% else %>
+      <span style="color:gray;">waiting</span> | 
+    <% end %>
+    <%= p.email %> | <%= link_to 'Invite', convert_path(p), :confirm => "Are you sure?", :method => :post %> | <%= link_to 'Edit', edit_prospect_path(p) %> | <%= link_to 'Destroy', p, :confirm => 'Are you sure?', :method => :delete %><br />
+  <% end %>
+</ul>
+<div class="new"><%= link_to image_tag("clear.png"), new_prospect_path %></div>

@@ -1,0 +1,11 @@
+<h1><%= @user.company_name %></h1>
+<br />
+<%= @user.last_name %>, <%= @user.first_name %><br />
+<br />
+<%= @user.email %><br />
+<br />
+Viewers: <%= @user.viewers.count %><br />
+Overlays: <%= @user.overlays.count %><br />
+GeoFiles: <%= @user.geofiles.count %><br />
+<br />
+<%= link_to 'Index', users_path %>

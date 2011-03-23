@@ -1,0 +1,21 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user_id: 1
+  markup_id: 1
+  name: MyString
+  link: MyString
+  kml_file_name: MyString
+  kml_content_type: MyString
+  kml_file_size: 1
+  kml_updated_at: 2011-02-19 14:25:21
+
+two:
+  user_id: 1
+  markup_id: 1
+  name: MyString
+  link: MyString
+  kml_file_name: MyString
+  kml_content_type: MyString
+  kml_file_size: 1
+  kml_updated_at: 2011-02-19 14:25:21

@@ -1,0 +1,103 @@
+<head>
+  <title><%= @geofile.name %> | CrowFly</title>
+  <%= stylesheet_link_tag 'application' %>
+  <script src="http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA"></script>    
+  <%= javascript_include_tag 'jquery', 'jquery-ui', 'ge', 'inputs', 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    function initCB(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+
+      ge.getOptions().setAtmosphereVisibility(true);
+      ge.getOptions().setUnitsFeetMiles(true);
+      ge.getOptions().setFlyToSpeed(0.5);
+      
+      var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);
+      ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, true);
+      cam.setAltitude(21336000);
+      cam.setLatitude(35.217768);
+      cam.setLongitude(-97.495151);
+      cam.setHeading(0);
+      cam.setTilt(0);
+      ge.getView().setAbstractView(cam);
+      
+      <%= render '/application/logo' %>
+      
+      showKml();
+    }
+    
+    function showKml() {
+    	var link = ge.createLink('');
+      <% if @geofile.link.blank? %>
+        var href = 'http://crowfly.co<%= @geofile.kml.url %>';
+      <% else %>
+			  var href = '<%= @geofile.link %>';
+      <% end %>
+      link.setHref(href);
+			var networkLink = ge.createNetworkLink('');
+      networkLink.set(link, true, false);
+      ge.getFeatures().appendChild(networkLink);
+    }
+    
+    google.load("maps", "2");
+    
+    function buttonClick() {
+      var geocodeLocation = document.getElementById('search').value;
+      
+      var geocoder = new google.maps.ClientGeocoder();
+      geocoder.getLatLng(geocodeLocation, function(point) {
+        if (point) {
+          var lookAt = ge.createLookAt('');
+          lookAt.set(point.y, point.x, 0, ge.ALTITUDE_RELATIVE_TO_GROUND,
+                     0, 0, 20000);
+          ge.getView().setAbstractView(lookAt);
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <% if flash[:notice] || flash[:alert] %>
+          <script>displayNotice()</script>
+          <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+        <% end %>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="dormant"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="active"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>
+        </div>
+        <div id="panel-content">
+          <h1><%= @geofile.name %></h1><br />
+          <input id="search" type="text" onkeypress="return preventEnter(this, event)"/><input id="find-location" type="button" value="Fly To" onClick="buttonClick()"><br />
+          <%= link_to 'Edit this GeoFile', edit_user_geofile_path(@user, @geofile) %>
+        </div>        
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Be sure to navigate<br />to your data to<br />confirm that it is<br />displayed successfully.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="plugin">
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

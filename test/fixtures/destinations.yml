@@ -1,0 +1,17 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  altitude: MyString
+  latitude: MyString
+  longitude: MyString
+  heading: MyString
+  tilt: MyString
+  crow_id: 1
+
+two:
+  altitude: MyString
+  latitude: MyString
+  longitude: MyString
+  heading: MyString
+  tilt: MyString
+  crow_id: 1

@@ -1,0 +1,67 @@
+<%= form_for [@user, @viewer], :html => { :class => "form", :multipart => true } do |f| %>
+  <div id="form-basics">
+    <div class="field" style="line-height:1em">
+      <%= f.label :title %><br /><br />
+      <%= f.text_field :title %><br /><br />
+    </div>
+    <div class="field" style="line-height:1em">
+      <%= f.label :link %><br /><br />
+      <span class="ghost">crowfly.co/<%= current_user.company_name %>/<%= image_tag('arrow.jpg', { :id => 'arrow'} ) %></span><br />
+      <%= f.text_field :link %>
+    </div>  
+    <div class="field" style="line-height:1em;">
+      <%= f.label :speed %><br /><br />
+      <div class="slider"></div><br />
+      <div class="ghost" style="padding:0;">slow < 0.05 - 5.00 > fast</div><br />
+      <%= f.text_field :speed %><br /><br />
+    </div>
+  </div>
+  <div id="form-options">
+    <div class="field">
+      Navigation Control:<br />
+      <span class="ghost">include option</span> <%= f.check_box :navigation_option %> <span class="ghost">default</span>
+      <%= f.select(:navigation_default, '<option value="true">on</option><option value="false">off</option>') %>
+    </div>
+    <div class="field">
+      Scale:<br />
+      <span class="ghost">include option</span> <%= f.check_box :scale_option %> <span class="ghost">default</span>
+      <%= f.select(:scale_default, '<option value="false">off</option><option value="true">on</option>') %>
+    </div>
+    <div class="field">
+      Borders Layer:<br />
+      <span class="ghost">include option</span> <%= f.check_box :borders_option %> <span class="ghost">default</span>
+      <%= f.select(:borders_default, '<option value="false">off</option><option value="true">on</option>') %>
+    </div>
+    <div class="field">
+      Buildings Layer:<br />
+      <span class="ghost">include option</span> <%= f.check_box :buildings_option %> <span class="ghost">default</span>
+      <%= f.select(:buildings_default, '<option value="false">off</option><option value="true">on</option>') %>
+    </div>
+    <div class="field">
+      Roads Layer:<br />
+      <span class="ghost">include option</span> <%= f.check_box :roads_option %> <span class="ghost">default</span>
+      <%= f.select(:roads_default, '<option value="false">off</option><option value="true">on</option>') %>
+    </div>
+    <div class="field">
+      Terrain Layer:<br />
+      <span class="ghost">include option</span> <%= f.check_box :terrain_option %> <span class="ghost">default</span>
+      <%= f.select(:terrain_default, '<option value="false">off</option><option value="true">on</option>') %>
+    </div>
+  </div>
+  <div id="form-logo">
+    <div class="field" style="line-height:1em;">
+      <%= f.label :logo %><br /><br />
+      <%= f.file_field :logo %><br /><br />
+      <div class="recommendation">use a .png for best results</div>
+    </div>
+  </div>
+  <br />
+  <div class="toggle">
+    <%= link_to "Bare Essentials", "#", :style => "color:gray;float:left;", :onClick => "toggleBasics(this); return false", :id => "basics_link" %><br />
+    <%= link_to "Viewer Options", "#", :style => "color:gray;margin:0 83px;", :onClick => "toggleOptions(this); return false" %><br />
+    <%= link_to "Logo Upload", "#", :style => "color:gray;float:right;", :onClick => "toggleLogo(this); return false" %><br />
+  </div>
+  <div class="submit">
+    <%= image_submit_tag('clear.png') %>
+  </div>
+<% end %>

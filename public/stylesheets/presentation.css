@@ -1,0 +1,129 @@
+html {
+  height: 100%;
+}
+
+body {
+  background-color: #85AAD7;  
+  height: 100% !important;
+  width: 100% !important;  
+  text-align: left;
+}
+
+body, p {
+  color: #333;
+  padding: 0;
+  margin: 0;
+  font-family: verdana, arial, helvetica, sans-serif;  
+  font-size: 0.8em;
+  line-height: 2.1em;  
+}
+
+img { vertical-align: middle; border-style: none;}
+
+a { 
+  color: #85AAD7;
+  text-decoration: none; 
+}
+
+a:visited { color: #85AAD7; }
+a:active { color: #FFF; }
+a:hover { color: #333; }
+
+#wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+#toolbar {
+  position: fixed;  
+  background-color: #333;
+  width: 100%;
+  height: 5em;
+  z-index: 99;
+}
+
+#logo {
+  margin: 5px 0 0 0;
+  float: left;  
+}
+
+#logo img {
+  width: 200px;
+}
+
+#links {
+  text-align: center;
+  float: left;
+  width: 150px;
+  padding: 0 5px;
+  margin: 5px auto 0 auto;
+  color: gray;
+}
+
+#links a {
+  color: white;
+}
+
+#links a:hover {
+  color: #85AAD7;
+}
+
+#showbar {
+  color: white;
+  float: right;
+  display: inline;
+}
+
+#controls {
+  position: absolute; 
+  overflow: auto;
+  height: 5em;
+  right: 0;
+  width: 81%;  
+}
+
+#destinations {
+  display: inline;
+  float: right;
+  margin: 17px 10px 0 0;  
+  padding: 0 0 0 20px;
+}
+
+#options {
+  text-align: right;
+}
+
+.option {
+  margin: 25px 10px 0 0;
+  display: inline;  
+}
+
+#content {
+  width: 100%;
+  padding: 5em 0 0 0;
+  background-color: #FFF;
+}
+
+#plugin {
+  height: 100%;
+  background-image: url('/images/plugin-loading.gif');
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+#failure {
+  background-color: #FFF;
+  height: 100%;
+  width: 100%;  
+  text-align: center;
+}
+
+.point-content p, .point-image {
+  line-height: 1em;
+}
+
+.unformatted {
+  min-height: 100px;
+  min-width: 300px;
+  text-align: center;
+}

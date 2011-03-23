@@ -1,0 +1,173 @@
+<head>
+  <title><%= @viewer.title %> | CrowFly</title>
+  <%= stylesheet_link_tag 'application' %>
+  <script src="http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA"></script>            
+  <%= javascript_include_tag 'jquery', 'jquery-ui', 'ge', 'inputs', 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    function initCB(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+      
+      <%= render '/application/logo' %>
+      
+    <% unless @viewer.logo_file_name.nil? %>
+      var logo = ge.createIcon('');
+      logo.setHref('http://crowfly.co<%= @viewer.logo.url %>');
+      var screenOverlay = ge.createScreenOverlay('');
+      screenOverlay.setIcon(logo);
+      screenOverlay.getOverlayXY().setXUnits(ge.UNITS_PIXELS);
+      screenOverlay.getOverlayXY().setYUnits(ge.UNITS_INSET_PIXELS);
+      screenOverlay.getOverlayXY().setX(<%= @viewer.logo_width %>/2);
+      screenOverlay.getOverlayXY().setY(<%= @viewer.logo_height %>/2);
+      screenOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
+      screenOverlay.getSize().setYUnits(ge.UNITS_PIXELS);
+      screenOverlay.getSize().setX(<%= @viewer.logo_width %>);
+      screenOverlay.getSize().setY(<%= @viewer.logo_height %>);
+      ge.getFeatures().appendChild(screenOverlay);
+    <% end %>
+      
+      var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);
+      ge.getOptions().setAtmosphereVisibility(true);
+      ge.getOptions().setScaleLegendVisibility(true);
+      ge.getOptions().setFlyToSpeed(1.0);
+      ge.getNavigationControl().setVisibility(ge.VISIBILITY_SHOW);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, true);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, <%= @viewer.terrain_default %>);
+      cam.setAltitude(<%= @beginning.altitude %>);
+      cam.setLatitude(<%= @beginning.latitude %>);
+      cam.setLongitude(<%= @beginning.longitude %>);
+      cam.setHeading(<%= @beginning.heading %>);
+      cam.setTilt(<%= @beginning.tilt %>);
+      ge.getView().setAbstractView(cam);
+      
+      google.earth.addEventListener(ge.getView(), 'viewchangeend', function() {    
+        $("#loading").fadeOut(500, function() { 
+          $("#inputs").slideDown(500);
+        });
+      });
+      
+      google.earth.addEventListener(ge.getView(), 'viewchange', function() {
+        var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);    
+        var Altitude = cam.getAltitude();
+        var Latitude = cam.getLatitude();
+        var Longitude = cam.getLongitude();
+        var Heading = cam.getHeading();
+        var Tilt = cam.getTilt();
+        document.getElementById('destination_altitude').style.backgroundImage="none";
+        document.getElementById('destination_latitude').style.backgroundImage="none";
+        document.getElementById('destination_longitude').style.backgroundImage="none";
+        document.getElementById('destination_heading').style.backgroundImage="none";
+        document.getElementById('destination_tilt').style.backgroundImage="none";
+        document.getElementById('destination_altitude').value=Math.round(Altitude*3.2808399); //feet
+        document.getElementById('destination_latitude').value=Latitude.toFixed(6);
+        document.getElementById('destination_longitude').value=Longitude.toFixed(6);
+        document.getElementById('destination_heading').value=Heading.toFixed(6);
+        document.getElementById('destination_tilt').value=Tilt.toFixed(6);
+      });
+    }
+    <%= render '/application/search' %>
+  </script>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="showbar">
+        <h2>Viewer: <span class="white"><%= link_to @viewer.title, [@user, @viewer] %></span></h2>
+      </div>
+      <div id="notice">
+        <div class="message">
+          <% if @destination.errors.any? || flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <% @destination.errors.full_messages.each do |msg| %>
+              <p><%= msg %>.</p>
+            <% end %>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="active"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>          
+          <%= image_tag("arrow.png") %>
+          <span class="dormant"><%= link_to image_tag("beginning.png"), edit_user_viewer_beginning_path(@user, @viewer, @beginning) %></span>
+          <span class="active"><%= link_to image_tag("destinations.png"), user_viewer_destinations_path(@user, @viewer) %></span>
+          <span class="dormant"><%= link_to image_tag("points.png"), user_viewer_points_path(@user, @viewer) %></span>
+        </div>
+        <div id="panel-content">
+          <%= form_for [@user, @viewer, @destination] do |f| %>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('one.png') %>
+              </div>
+              <div class="step-field">
+                <p>NAME</p>
+                <%= f.text_field :name %>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('two.png') %>
+              </div>
+              <div class="step-field">
+                <p>FIND LOCATION</p>
+                <input id="search" type="text" onkeypress="return preventEnter(this, event)"/><input id="find-location" type="button" value="Fly To" onClick="buttonClick()">
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-count">
+                <%= image_tag('three.png') %>
+              </div>
+              <div class="step-field">
+                <div id="loading">
+                  <%= image_tag('black-loading.gif') %>
+                </div>
+                <div id="inputs">
+                  <div class="input">
+                    <p>LATITUDE</p><%= f.text_field :latitude, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>LONGITUDE</p><%= f.text_field :longitude, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>HEADING</p><%= f.text_field :heading, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>TILT</p><%= f.text_field :tilt, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="input">
+                    <p>ALTITUDE</p><%= f.text_field :altitude, :class => 'cam-input', :onFocus => 'removeImage(this)', :onBlur => 'checkValue(this)' %>
+                  </div>
+                  <div class="save">
+                    <%= image_tag('clear.png', {:onClick => 'submitForm()'}) %>
+                  </div>
+                </div>              
+              </div>
+            </div>          
+          <% end %>
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />You can either search<br />for a location,<br />or navigate manually with the aerial controls.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="plugin">
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

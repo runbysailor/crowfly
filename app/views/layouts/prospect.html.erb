@@ -1,0 +1,35 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults, 'public' %>
+  <%= stylesheet_link_tag 'prospect' %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="loading">
+    <%= image_tag('loading-background.gif') %>
+    <br />
+    <div id="communication">
+      LOADING
+    </div>
+  </div>
+  <div id="background">
+    <%= image_tag('background.jpg', {:onload => 'proceed()'}) %>
+  </div>  
+  <div id="wrapper">
+    <div id="notice">
+      <div id="message">
+        <% if @prospect.errors.any? || flash[:notice] || flash[:alert] %>
+          <script>displayNotice()</script>
+          <% @prospect.errors.full_messages.each do |msg| %>
+            <p><%= msg %>.</p>
+          <% end %>
+          <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+        <% end %>
+      </div>
+      <div class="close">
+        <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+      </div>
+    </div>
+    <%= yield %>  
+  </div>
+</body>

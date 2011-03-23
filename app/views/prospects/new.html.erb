@@ -1,0 +1,23 @@
+<div id="signin">
+  <% if user_signed_in? %>
+    <% unless current_user.company_name.nil? %>
+      <%= link_to current_user.company_name, "/" + current_user.company_name %>
+    <% end %>
+  <% else %>
+    <%= link_to "Sign In", new_user_session_path %>
+  <% end %>
+</div>
+<div id="logo">
+  <%= image_tag('logo_large.png') %>
+</div>
+<div id="copy">  
+  <p class="copy">
+    Simplifying the Google Earth Plug-in.
+    <br />
+    Spring 2011
+  </p>
+  <div id="signup">
+    <%= render 'form' %>
+  </div>
+</div>
+<%= render '/application/footer'%>

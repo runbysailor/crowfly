@@ -1,0 +1,68 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults, 'form' %>
+  <%= stylesheet_link_tag 'jquery', 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    $(function() {
+      var sliderMin = 0.05
+      var sliderMax = 5.00
+      var sliderStep = 0.05
+      var sliderValue = <%= @viewer.speed %>
+      $(".slider").slider({ 
+        min: sliderMin },{ 
+        max: sliderMax },{ 
+        step: sliderStep },{ 
+        value: sliderValue },{ 
+        slide: function(e, ui){
+          $("#viewer_speed").val(ui.value.toFixed(2));
+          $(".validation").html('&#10003;').css('color','green');
+        }
+      });
+    });
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if @viewer.errors.any? || flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <% @viewer.errors.full_messages.each do |msg| %>
+              <p><%= msg %>.</p>
+            <% end %>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="active"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>          
+        </div>
+        <div id="panel-content">
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />We recommend the<br />use of a logo with a<br />transparent background.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="index">
+          <h1>New Viewer</h1>
+          <%= render 'form' %>
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%> 
+  </div>
+</body>

@@ -1,0 +1,129 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults %>
+  <%= stylesheet_link_tag 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    // give user the url of the public presentation //
+    <% @viewers.each do |v| %>
+      function showLink<%= v.link.capitalize %>() {
+        $("#link_text_<%= v.link %>").fadeIn(500);
+        return false;
+      }
+    <% end %>
+    
+    // give user the iframe code of the public presentation //
+    <% @viewers.each do |v| %>
+      function showEmbed<%= v.link.capitalize %>() {
+        $("#embed_text_<%= v.link %>").fadeIn(500);
+        return false;
+      }
+    <% end %>
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">      
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="dormant"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>          
+        </div>
+        <div id="panel-content">
+          <% unless @viewers.empty? %>
+            <h1>Share Your Presentations</h1>
+            <% @viewers.each do |v| %>
+              <h2><%= link_to v.title, '/' + @user.company_name + '/' + v.link %></h2>
+              <div class="item">
+                <%= link_to 'Get Public Link', '#', :onclick => 'showLink' + v.link.capitalize + '()' %><br />
+                <div class="item">
+                  <input type="text" class="link_text" id="link_text_<%= v.link %>" value="http://crowfly.co/<%= @user.company_name %>/<%= v.link %>">
+                </div>
+              </div>
+              <div class="item">
+                <%= link_to 'Get Embed Code', '#', :onclick => 'showEmbed' + v.link.capitalize + '()' %><br />
+                <div class="item">                  
+                  <input type="text" class="embed_text" id="embed_text_<%= v.link %>" value="<iframe src='http://crowfly.co/<%= @user.company_name %>/<%= v.link -%>/' width='1000px' height='500px'><p>Please contact hello@crowfly.co if you see this message.</p></iframe>">                  
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Viewers are the<br />presentations that you<br />will want to share.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="maps">
+          <h1>Your Account Map</h1>
+          <br />
+          <% if @viewers.empty? %>
+            <div class="item">
+              Welcome to CrowFly! <%= link_to "Click here to create a new viewer", new_user_viewer_path %>.
+            </div>
+          <% else %>
+            <div id="map">
+              <div class="category">
+                <%= link_to image_tag("viewers.png"), user_viewers_path %>
+              </div>
+              <div class="list">
+                <% @viewers.each do |v| %>
+                  <div class="item">
+                    <%= link_to v.title, [@user, v] %>
+                  </div>                  
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% unless @overlays.empty? %>
+            <div id="map">
+              <div class="category">
+                <%= link_to image_tag("overlays.png"), user_overlays_path %>
+              </div>
+              <div class="list">
+                <% @overlays.each do |o| %>
+                  <div class="item">
+                    <%= link_to o.name, edit_user_overlay_path(@user, o) %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% unless @geofiles.empty? %>
+            <div id="map">
+              <div class="category">
+                <%= link_to image_tag("geofiles.png"), user_geofiles_path %>
+              </div>
+              <div class="list">
+                <% @geofiles.each do |g| %>
+                  <div class="item">
+                    <%= link_to g.name, [@user, g] %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

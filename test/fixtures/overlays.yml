@@ -1,0 +1,25 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  user_id: 1
+  landscape_id: 1
+  north: MyString
+  south: MyString
+  east: MyString
+  west: MyString
+  image_file_name: MyString
+  image_content_type: MyString
+  image_file_size: 1
+  image_updated_at: 2011-02-18 19:11:31
+
+two:
+  user_id: 1
+  landscape_id: 1
+  north: MyString
+  south: MyString
+  east: MyString
+  west: MyString
+  image_file_name: MyString
+  image_content_type: MyString
+  image_file_size: 1
+  image_updated_at: 2011-02-18 19:11:31

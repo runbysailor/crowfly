@@ -1,0 +1,58 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults %>
+  <%= stylesheet_link_tag 'jquery', 'application' %>  
+  <%= csrf_meta_tag %>  
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">      
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="active"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>
+        </div>
+        <div id="panel-content">
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Click the name of<br />a viewer to add destinations and points.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="index">
+          <h1>Your Viewers</h1>
+          <br />
+          <div id="list">
+            <% @viewers.each do |v| %>
+              <div class="list-item">
+                <!div class="logo"><!%= image_tag viewer.logo.url(:thumb) %><!/div>
+                <%= link_to v.title, [@user, v] %>                
+                <div class="right"><%= link_to 'Edit', edit_user_viewer_path(@user, v) %> | <%= link_to 'Destroy', [@user, v], :confirm => 'Are you sure?', :method => :delete %></div>
+                { <%= link_to 'Public Presentation', '/' + @user.company_name + '/' + v.link %> }
+              </div>          
+            <% end %>
+          </div>
+          <div class="new"><%= link_to image_tag("clear.png"), new_user_viewer_path %></div>
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

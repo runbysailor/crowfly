@@ -1,0 +1,50 @@
+<head>
+  <title>CrowFly</title>
+  <%= javascript_include_tag :defaults %>
+  <%= stylesheet_link_tag 'jquery', 'application' %>
+  <%= csrf_meta_tag %>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="notice">
+        <div class="message">
+          <% if @geofile.errors.any? || flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <% @geofile.errors.full_messages.each do |msg| %>
+              <p><%= msg %>.</p>
+            <% end %>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">      
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="dormant"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="active"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>
+        </div>
+        <div id="panel-content">
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Hosted files will<br />override those that<br />may be uploaded.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="index">
+          <h1>New GeoFile</h1>
+          <%= render 'form' %>
+        </div>
+      </div>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

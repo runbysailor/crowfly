@@ -1,0 +1,13 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  altitude: 1
+  latitude: 1
+  longitude: 1
+  tilt: 1
+
+two:
+  altitude: 1
+  latitude: 1
+  longitude: 1
+  tilt: 1

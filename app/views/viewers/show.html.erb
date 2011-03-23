@@ -1,0 +1,263 @@
+<head>
+  <title><%= @viewer.title %> | CrowFly</title>
+  <%= stylesheet_link_tag 'application' %>
+  <script src="http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA"></script>    
+  <%= javascript_include_tag 'jquery', 'jquery-ui', 'ge', 'application' %>
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    function initCB(instance) {
+      ge = instance;
+      ge.getWindow().setVisibility(true);
+      
+      ge.getOptions().setAtmosphereVisibility(true);
+      ge.getOptions().setUnitsFeetMiles(true);
+      ge.getOptions().setFlyToSpeed(<%= @viewer.speed %>);
+      <% if @viewer.navigation_default == true %>
+        ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
+      <% else %>
+        ge.getNavigationControl().setVisibility(ge.VISIBILITY_HIDDEN);
+      <% end %>
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BORDERS, <%= @viewer.borders_default %>);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_BUILDINGS, <%= @viewer.buildings_default %>);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_ROADS, <%= @viewer.roads_default %>);
+      ge.getLayerRoot().enableLayerById(ge.LAYER_TERRAIN, <%= @viewer.terrain_default %>);
+      
+      var cam = ge.getView().copyAsCamera(ge.ALTITUDE_ABSOLUTE);
+      cam.setAltitude(<%= @beginning.altitude %>);
+      cam.setLatitude(<%= @beginning.latitude %>);
+      cam.setLongitude(<%= @beginning.longitude %>);
+      cam.setHeading(<%= @beginning.heading %>);
+      cam.setTilt(<%= @beginning.tilt %>);
+      ge.getView().setAbstractView(cam);
+      
+      <%= render '/application/logo' %>
+
+    <% unless @viewer.logo_file_name.nil? %>
+      var logo = ge.createIcon('');
+      logo.setHref('http://crowfly.co<%= @viewer.logo.url %>');
+      var screenOverlay = ge.createScreenOverlay('');
+      screenOverlay.setIcon(logo);
+      screenOverlay.getOverlayXY().setXUnits(ge.UNITS_PIXELS);
+      screenOverlay.getOverlayXY().setYUnits(ge.UNITS_INSET_PIXELS);
+      screenOverlay.getOverlayXY().setX(<%= @viewer.logo_width %>/2);
+      screenOverlay.getOverlayXY().setY(<%= @viewer.logo_height %>/2);
+      screenOverlay.getSize().setXUnits(ge.UNITS_PIXELS);
+      screenOverlay.getSize().setYUnits(ge.UNITS_PIXELS);
+      screenOverlay.getSize().setX(<%= @viewer.logo_width %>);
+      screenOverlay.getSize().setY(<%= @viewer.logo_height %>);
+      ge.getFeatures().appendChild(screenOverlay);
+    <% end %>
+    
+    <% @points.each do |p| %>
+      showPoint_<%= p.id %>();
+    <% end %>
+    
+    <% @overlays.each do |o| %>
+      showOverlay_<%= o.id %>();
+    <% end %>
+    
+    <% @geofiles.each do |g| %>
+      showKml_<%= g.id %>();
+    <% end %>
+    }
+
+    function updateOptions() {
+      var f = document.options
+      <% unless @viewer.navigation_option == false %>
+        if (f.navigation_selection.checked) {
+          ge.getNavigationControl().setVisibility(ge.VISIBILITY_AUTO);
+        } else {
+          ge.getNavigationControl().setVisibility(ge.VISIBILITY_HIDE);
+        }
+      <% end %>
+      <% unless @viewer.scale_option == false %>        ge.getOptions().setScaleLegendVisibility(f.scale_selection.checked);
+      <% end %>
+      var l = ge.getLayerRoot()
+      <% unless @viewer.borders_option == false %>
+        l.enableLayerById(ge.LAYER_BORDERS, f.borders_selection.checked);
+      <% end %>
+      <% unless @viewer.buildings_option == false %>
+        l.enableLayerById(ge.LAYER_BUILDINGS, f.buildings_selection.checked);
+      <% end %>
+      <% unless @viewer.roads_option == false %>
+        l.enableLayerById(ge.LAYER_ROADS, f.roads_selection.checked);
+      <% end %>
+      <% unless @viewer.terrain_option == false %>
+        l.enableLayerById(ge.LAYER_TERRAIN, f.terrain_selection.checked);
+      <% end %>
+    }
+    
+  	function flyTo(to) {
+      var view = ge.createCamera('');
+    	switch(to) {
+        case "<%= @beginning.name %>":
+          view.set(<%= @beginning.latitude %>, <%= @beginning.longitude %>, <%= @beginning.altitude %>, ge.ALTITUDE_ABSOLUTE, <%= @beginning.heading %>, <%= @beginning.tilt %>, 0);
+        break;
+      <% @destinations.each do |d| %>
+        case "<%= d.name %>":
+          view.set(<%= d.latitude %>, <%= d.longitude %>, <%= d.altitude %>, ge.ALTITUDE_ABSOLUTE, <%= d.heading %>, <%= d.tilt %>, 0);
+        break;
+      <% end %>      
+      }
+      ge.getView().setAbstractView(view);
+    }
+    
+    <% @points.each do |p| %>
+      function showPoint_<%= p.id %>() {
+        var placemark = ge.createPlacemark('');
+        placemark.setName("<%= p.name %>");
+        ge.getFeatures().appendChild(placemark);
+        
+        var icon = ge.createIcon('');
+        icon.setHref('http://crowfly.co/images/square.png');
+        var style = ge.createStyle('');
+        style.getIconStyle().setIcon(icon);
+        placemark.setStyleSelector(style);
+        
+        var point = ge.createPoint('');
+        point.setLatitude(<%= p.latitude %>);
+        point.setLongitude(<%= p.longitude %>);
+        placemark.setGeometry(point);
+        
+        google.earth.addEventListener(placemark, 'click', function(event) {          
+          event.preventDefault();
+          var balloon = ge.createHtmlDivBalloon('');
+          balloon.setFeature(placemark);
+          var div = document.createElement('DIV');
+          div.innerHTML = document.getElementById('balloon-content-<%= p.id %>').innerHTML;
+          balloon.setContentDiv(div);
+          ge.setBalloon(balloon);
+        });
+      }
+    <% end %>
+    
+    <% @overlays.each do |o| %>
+      function showOverlay_<%= o.id %>() {
+        var overlay = ge.createGroundOverlay('');
+        var image = ge.createIcon('');
+        image.setHref('http://crowfly.co<%= o.image.url %>');
+        overlay.setIcon(image);
+        var bounds = ge.createLatLonBox('');
+        bounds.setBox(<%= o.north %>, <%= o.south %>, <%= o.east %>, <%= o.west %>, 0);
+        overlay.setLatLonBox(bounds);
+        ge.getFeatures().appendChild(overlay);
+      }
+    <% end %>
+    
+    <% @geofiles.each do |g| %>
+      function showKml_<%= g.id %>() {
+        var link = ge.createLink('');
+        <% if g.link.blank? %>
+          var href = 'http://crowfly.co<%= g.kml.url %>';
+        <% else %>
+  			  var href = '<%= g.link %>';
+        <% end %>
+        link.setHref(href);
+  			var networkLink = ge.createNetworkLink('');
+        networkLink.set(link, true, false);
+        ge.getFeatures().appendChild(networkLink);
+      }
+    <% end %>
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="showbar">
+        <div id='controls'>
+          <form name="destinations" id="destinations" method="get">
+            Locator
+            <select onChange="flyTo(this.value);" name="propertylocator">
+              <option value="<%= @beginning.name %>"><%= @beginning.name %></option>
+              <% @destinations.each do |d| %>
+              <option value="<%= d.name %>"><%= d.name %></option>
+              <% end %>
+            </select>
+          </form>
+          <form name="options" id="options" action="javascript:updateOptions();">
+            <% unless @viewer.navigation_option == false %>
+              <div class="option">Navigation <%= check_box("navigation", "selection", { :checked => @viewer.navigation_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+            <% unless @viewer.scale_option == false %>
+              <div class="option">Scale <%= check_box("scale", "selection", { :checked => @viewer.scale_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+            <% unless @viewer.borders_option == false %>
+              <div class="option">Borders <%= check_box("borders", "selection", { :checked => @viewer.borders_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+            <% unless @viewer.buildings_option == false %>
+              <div class="option">Buildings <%= check_box("buildings", "selection", { :checked => @viewer.buildings_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+            <% unless @viewer.roads_option == false %>
+              <div class="option">Roads <%= check_box("roads", "selection", { :checked => @viewer.roads_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+            <% unless @viewer.terrain_option == false %>
+              <div class="option">Terrain <%= check_box("terrain", "selection", { :checked => @viewer.terrain_default, :class => "option", :onclick => "updateOptions()" }) %></div>
+            <% end %>
+          </form>          
+        </div>
+    </div>
+      <div id="notice">
+        <div class="message">
+          <% if @viewer.errors.any? || flash[:notice] || flash[:alert] %>
+            <script>displayNotice()</script>
+            <% @viewer.errors.full_messages.each do |msg| %>
+              <p><%= msg %>.</p>
+            <% end %>
+            <p><%= flash[:notice] %> <%= flash[:alert] %></p>
+          <% end %>
+        </div>
+        <div class="close">
+          <%= link_to 'x', '#', :onclick => 'hideNotice()' %>
+        </div>
+      </div>
+    </div>
+    <div id="content">      
+      <div id="left-panel">
+        <div id="navigation">
+          <span class="active"><%= link_to image_tag("viewers.png"), user_viewers_path %></span>
+          <span class="dormant"><%= link_to image_tag("overlays.png"), user_overlays_path %></span>
+          <span class="dormant"><%= link_to image_tag("geofiles.png"), user_geofiles_path %></span>          
+          <%= image_tag("arrow.png") %>
+          <span class="dormant"><%= link_to image_tag("beginning.png"), edit_user_viewer_beginning_path(@user, @viewer, @beginning) %></span>
+          <span class="dormant"><%= link_to image_tag("destinations.png"), user_viewer_destinations_path(@user, @viewer) %></span>
+          <span class="dormant"><%= link_to image_tag("points.png"), user_viewer_points_path(@user, @viewer) %></span>
+        </div>
+        <div id="panel-content">
+          <h1><%= @viewer.title %></h1>   
+        </div>
+        <div id="tip">
+          <div class="tip">
+            <u>Tip</u><br />Navigate to your <br />destinations using the<br />locater in the top right<br />corner of your screen.
+          </div>
+        </div>
+      </div>
+      <div id="right-panel">
+        <div id="plugin">
+        </div>
+      </div>
+      <% @points.each do |p| %>
+        <div id="balloon-content-<%= p.id %>" style="display:none;">
+          <div class="point-content">
+            <% if p.formatted == true %>
+              <%= p.content.html_safe %>
+            <% else %>
+              <div class="unformatted">
+                <b><%= p.name %></b>
+                <br /><br />
+                <%= simple_format(p.content) %>
+              </div>
+            <% end %>
+          </div>
+          <% unless p.image_file_size.nil? %>
+            <br />
+            <div class="point-image">
+              <%= image_tag(p.image.url) %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <%= render '/application/footer'%>    
+  </div>
+</body>

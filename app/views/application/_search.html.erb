@@ -1,0 +1,15 @@
+google.load("maps", "2");
+
+function buttonClick() {
+  var geocodeLocation = document.getElementById('search').value;
+  
+  var geocoder = new google.maps.ClientGeocoder();
+  geocoder.getLatLng(geocodeLocation, function(point) {
+    if (point) {
+      var lookAt = ge.createLookAt('');
+      lookAt.set(point.y, point.x, 0, ge.ALTITUDE_RELATIVE_TO_GROUND,
+                 0, 0, 5000);
+      ge.getView().setAbstractView(lookAt);
+    }
+  });
+}

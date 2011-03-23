@@ -1,0 +1,8 @@
+en:
+  devise:
+    invitations:
+      send_instructions: 'An email with instructions about how to set the password has been sent.'
+      updated: 'Your account was confirmed successfully.'
+    mailer:
+      invitation:
+        subject: 'CrowFly | Account Invitation'
