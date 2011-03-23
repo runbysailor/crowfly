@@ -1,0 +1,7 @@
+<h1>Viewers</h1>
+<br />
+<div id="list">
+  <% @viewers.each do |v| %>      
+    <%= link_to v.link, user_viewer_path(v.user, v) %> | <%= link_to v.user.company_name, user_path(v.user) %><br />
+  <% end %>
+</div>

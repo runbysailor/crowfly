@@ -13,6 +13,7 @@ Crowfly::Application.routes.draw do
     delete 'users/account/remove' => 'users/registrations#destroy'
   end
   resources :users, :only => [:index, :show]
+  match 'viewers' => "users#viewers", :as => "viewers"
   match 'welcome' => "prospects#show", :as => "welcome"
   match 'convert/:id' => "prospects#convert", :as => "convert"
   resources :prospects

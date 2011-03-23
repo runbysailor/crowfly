@@ -19,4 +19,9 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     render :layout => 'devise'
   end
+  
+  def viewers
+    @viewers = Viewer.all
+    render :layout => 'devise'
+  end
 end
