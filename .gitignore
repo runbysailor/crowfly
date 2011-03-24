@@ -5,6 +5,7 @@ tmp/**/*
 config/initializers/mailer.rb
 config/database.yml
 db/schema.rb
+public/system
 .DS_Store
 .redcar
 .redcar/*
