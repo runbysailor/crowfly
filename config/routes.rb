@@ -1,4 +1,5 @@
 Crowfly::Application.routes.draw do
+  match "maps" => "application#maps"
   match "about" => "application#about"
   match "contact" => "application#contact"
   match "terms" => "application#terms"

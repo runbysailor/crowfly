@@ -15,6 +15,7 @@ function reSize() {
     myHeight = document.body.clientHeight;
   }
   var perfectHeight = myHeight-64;  
+  $("#content").height(perfectHeight);
   $("#plugin").height(perfectHeight);  
 }
 

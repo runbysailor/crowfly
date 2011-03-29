@@ -1,7 +1,7 @@
 <head>
   <title><%= @viewer.title %> | CrowFly</title>
   <%= stylesheet_link_tag 'presentation' %>
-  <script src="http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA"></script>    
+  <%= javascript_include_tag 'http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA' %>    
   <%= javascript_include_tag 'jquery', 'ge', 'presentation' %>
   <%= csrf_meta_tag %>
   <script type="text/javascript">
@@ -93,11 +93,11 @@
         case "<%= @beginning.name %>":
           view.set(<%= @beginning.latitude %>, <%= @beginning.longitude %>, <%= @beginning.altitude %>, ge.ALTITUDE_ABSOLUTE, <%= @beginning.heading %>, <%= @beginning.tilt %>, 0);
         break;
-      <% @destinations.each do |d| %>
-        case "<%= d.name %>":
-          view.set(<%= d.latitude %>, <%= d.longitude %>, <%= d.altitude %>, ge.ALTITUDE_ABSOLUTE, <%= d.heading %>, <%= d.tilt %>, 0);
-        break;
-      <% end %>      
+        <% @destinations.each do |d| %>
+          case "<%= d.name %>":
+            view.set(<%= d.latitude %>, <%= d.longitude %>, <%= d.altitude %>, ge.ALTITUDE_ABSOLUTE, <%= d.heading %>, <%= d.tilt %>, 0);
+          break;
+        <% end %>
       }
       ge.getView().setAbstractView(view);
     }
@@ -171,7 +171,7 @@
             <select onChange="flyTo(this.value);" name="propertylocator">
               <option value="<%= @beginning.name %>"><%= @beginning.name %></option>
               <% @destinations.each do |d| %>
-              <option value="<%= d.name %>"><%= d.name %></option>
+                <option value="<%= d.name %>"><%= d.name %></option>
               <% end %>
             </select>
           </form>

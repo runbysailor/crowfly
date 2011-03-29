@@ -1,0 +1,139 @@
+<head>
+  <title><%= @viewer.title %> | CrowFly</title>
+  <%= stylesheet_link_tag 'presentation' %>
+  <%= javascript_include_tag 'http://maps.google.com/maps/api/js?sensor=false' %>
+  <%= javascript_include_tag 'label', 'jquery', 'presentation' %>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+  <%= csrf_meta_tag %>
+  <script type="text/javascript">
+    function initialize() {
+      var plugin = document.getElementById('plugin');
+      var beginning = new google.maps.LatLng(<%= @beginning.latitude %>, <%= @beginning.longitude %>);
+      var options = {
+        zoom: 13,
+        center: beginning,
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        mapTypeControlOptions: {
+          position: google.maps.ControlPosition.TOP_CENTER
+        },
+        panControl: true,
+        panControlOptions: {
+          position: google.maps.ControlPosition.TOP_RIGHT
+        },
+        zoomControl: true,
+        zoomControlOptions: {
+          position: google.maps.ControlPosition.TOP_RIGHT
+        },
+      };
+      map = new google.maps.Map(plugin, options);
+      map.setTilt(45);
+      
+      var crowfly = document.createElement('DIV');
+      crowfly.innerHTML = '<img src="http://crowfly.co/images/logo_white.png" style="height:33px;padding:0 0 3px 0;">';
+      map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(crowfly);
+      
+      var logo = document.createElement('DIV');
+      logo.innerHTML = '<img src="http://crowfly.co/system/logos/2/original/psc.png">';
+      map.controls[google.maps.ControlPosition.TOP_LEFT].push(logo);
+      
+      var bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(<%= @overlay.south %>, <%= @overlay.west %>),
+        new google.maps.LatLng(<%= @overlay.north %>, <%= @overlay.east %>)
+      );
+      var overlay = new google.maps.GroundOverlay('http://crowfly.co/system/images/6/original/cse60.png', bounds);
+      overlay.setMap(map);
+      
+      var geofile = new google.maps.KmlLayer('http://crowfly.co/system/kmls/2/original/haworth.kml', { preserveViewport: true });   
+      geofile.setMap(map);
+      
+      <% @points.each do |p| %>
+        showPoint_<%= p.id %>();
+      <% end %>
+      
+      <% @points.each do |p| %>
+        function showPoint_<%= p.id %>() {
+          var icon = 'http://crowfly.co/images/square.png';
+          var point = new google.maps.LatLng(<%= p.latitude %>, <%= p.longitude %>);
+          var marker = new MarkerWithLabel({
+            position: point,
+            map: map,
+            labelContent: "<%= p.name %>",
+            labelAnchor: new google.maps.Point(-9, 29),
+            labelClass: "label",
+            labelStyle: {opacity: 0.8},
+            icon: icon
+          });
+          var balloon = new google.maps.InfoWindow({
+            content: document.getElementById('balloon-content-<%= p.id %>').innerHTML
+          });
+          google.maps.event.addListener(marker, 'click', function() {
+            balloon.open(map,marker);
+          });
+        }
+      <% end %>
+    }
+    
+    function transport(to) {
+      switch(to) {
+        case "<%= @beginning.name %>":
+          var latitude = <%= @beginning.latitude %>;
+          var longitude = <%= @beginning.longitude %>;
+        break;
+        <% @destinations.each do |d| %>
+          case "<%= d.name %>":
+            var latitude = <%= d.latitude %>;
+            var longitude = <%= d.longitude %>;
+          break;
+        <% end %>
+      }
+      var coordinates = new google.maps.LatLng(Number(latitude), Number(longitude))
+      map.panTo(coordinates);
+    }
+    
+    google.maps.event.addDomListener(window, 'load', initialize);
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="toolbar">
+      <%= render '/application/toolbar' %>
+      <div id="showbar">
+        <div id='controls'>
+          <form name="destinations" id="destinations" method="get">
+            Locator
+            <select onChange="transport(this.value);" name="propertylocator">
+              <option value="<%= @beginning.name %>"><%= @beginning.name %></option>
+              <% @destinations.each do |d| %>
+                <option value="<%= d.name %>"><%= d.name %></option>
+              <% end %>
+            </select>
+          </form>
+        </div>
+      </div>      
+    </div>
+    <div id="content">  
+      <div id="plugin">
+      </div>        
+      <% @points.each do |p| %>
+        <div id="balloon-content-<%= p.id %>" style="display:none;">
+          <div class="point-content">
+            <% if p.formatted == true %>
+              <%= p.content.html_safe %>
+            <% else %>
+              <div class="unformatted">
+                <b><%= p.name %></b>
+                <br /><br />
+                <%= simple_format(p.content) %>
+              </div>
+            <% end %>
+          </div>
+          <% unless p.image_file_size.nil? %>
+            <div class="point-image">
+              <%= link_to image_tag(p.image.url(:cropped)), p.image.url(:original) %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</body>

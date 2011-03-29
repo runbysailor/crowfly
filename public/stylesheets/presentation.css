@@ -99,12 +99,14 @@ a:hover { color: #333; }
 }
 
 #content {
+  height: 100%;
   width: 100%;
   padding: 5em 0 0 0;
   background-color: #FFF;
 }
 
 #plugin {
+  text-align: center;
   height: 100%;
   background-image: url('/images/plugin-loading.gif');
   background-repeat: no-repeat;
@@ -126,4 +128,14 @@ a:hover { color: #333; }
   min-height: 100px;
   min-width: 300px;
   text-align: center;
+}
+
+.label {
+  text-align: left;
+  color: #FFF;
+  padding: 0 10px;
+  text-shadow: 0.1em 0 0.1em #000, -0.1em 0 0.1em #000, 0 0.1em 0.1em #000, 0 -0.1em 0.1em #000;
+  font-size: 1.6em;
+  font-weight: bold;
+  width: 500px;
 }
