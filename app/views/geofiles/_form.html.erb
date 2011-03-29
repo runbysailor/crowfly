@@ -5,7 +5,7 @@
       <%= f.text_field :name %>
     </div>        
     <div class="field">
-      Upload your kml/kmz file:<br />
+      Upload your kml file:<br />
       <% unless @geofile.kml_file_name.nil? %>
         <span class="ghost">Current: <%= @geofile.kml_file_name %></span><br />
       <% end %>
