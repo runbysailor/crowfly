@@ -22,11 +22,15 @@ class ViewersController < ApplicationController
 
   def map
     @viewer = @user.viewers.find_by_link(params[:link])
-    @overlays = @viewer.overlays
-    @geofiles = @viewer.geofiles
-    @beginning = @viewer.beginning
-    @destinations = @viewer.destinations
-    @points = @viewer.points      
+    if @viewer.nil?
+      render :file => "#{Rails.root}/public/404.html", :status => 404, :layout => false
+    else
+      @overlays = @viewer.overlays
+      @geofiles = @viewer.geofiles
+      @beginning = @viewer.beginning
+      @destinations = @viewer.destinations
+      @points = @viewer.points
+    end
   end
 
   def show
