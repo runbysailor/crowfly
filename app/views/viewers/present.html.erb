@@ -2,9 +2,32 @@
   <title><%= @viewer.title %> | CrowFly</title>
   <%= stylesheet_link_tag 'presentation' %>
   <%= javascript_include_tag 'http://www.google.com/jsapi?key=ABQIAAAAz0RvMDFXhv-O6CYM6HQcshR7WLFas0bHKKetph4qLhGMtmIRJhQbleK3yk9FCoxwYNk7EFRYK69ZnA' %>    
-  <%= javascript_include_tag 'jquery', 'ge', 'presentation' %>
+  <%= javascript_include_tag 'jquery', 'presentation' %>
   <%= csrf_meta_tag %>
   <script type="text/javascript">
+    var ge;
+    google.load("earth", "1");
+    
+    function init() {
+      if (google.earth.isSupported()) {
+        if (google.earth.isInstalled()) {
+          google.earth.createInstance('plugin', initCB, failureCB);
+        } else {
+        alert("CrowFly is intended to be used with the Google Earth Plug-in. Please follow the instructions below, or click Switch to MAP if you prefer the basic map.");
+        google.earth.createInstance('plugin', initCB, failureCB);
+      }
+    } else {
+        alert("CrowFly is intended to be used with the Google Earth Plug-in, which your browser does not support. Please consider downloading the latest version of the Google Chrome browser. Until then, you will be redirected to the basic Google Maps version of CrowFly.");
+        location = "http://crowfly.co/<%= @user.company_name %>/<%= @viewer.link %>/map";
+      }
+    }
+    
+    function failureCB(errorcode) {
+      alert("Error: " + errorcode + ". Please refresh your browser. If the issue persists, please contact admin@crowfly.co");
+    }
+    
+    google.setOnLoadCallback(init);
+    
     function initCB(instance) {
       ge = instance;      
       ge.getWindow().setVisibility(true);
@@ -163,7 +186,8 @@
 <body>
   <div id="wrapper">
     <div id="toolbar">
-      <%= render '/application/toolbar' %>
+    <%= render '/application/toolbar' %>
+    <div id="toggle">Switch to <%= link_to 'MAP', '/' + @user.company_name + '/' + @viewer.link + '/map' %></div>
       <div id="showbar">
         <div id='controls'>
           <form name="destinations" id="destinations" method="get">

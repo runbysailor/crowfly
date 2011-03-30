@@ -1,5 +1,4 @@
-Crowfly::Application.routes.draw do
-  match "maps" => "application#maps"
+Crowfly::Application.routes.draw do  
   match "about" => "application#about"
   match "contact" => "application#contact"
   match "terms" => "application#terms"
@@ -30,6 +29,7 @@ Crowfly::Application.routes.draw do
       end
       resources :points, :except => [:show]
     end
+    match "/:link/map" => "viewers#map"
     match "/:link" => "viewers#present"
     match "/" => "users#account", :as => "account"
   end  

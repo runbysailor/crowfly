@@ -1,7 +1,7 @@
 <div id="logo">
   <%= link_to image_tag('logo_inverse_small.png'), root_path %>
 </div>
-<% unless action_name == 'present' || action_name == 'maps' %>
+<% unless action_name == 'present' || action_name == 'map' %>
   <div id="links">
     <% if user_signed_in? %>
       <%= link_to current_user.company_name, "/" + current_user.company_name %> 

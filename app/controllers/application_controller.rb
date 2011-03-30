@@ -19,16 +19,6 @@ class ApplicationController < ActionController::Base
     end
   end
   
-  def maps
-    @viewer = Viewer.find(1)
-    @beginning = @viewer.beginning
-    @destinations = @viewer.destinations    
-    @points = @viewer.points
-    @overlay = @viewer.overlays.last
-    @geofile = @viewer.geofiles.first
-    render :layout => 'application'
-  end
-  
   def about
     render :layout => 'public'
   end

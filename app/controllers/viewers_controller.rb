@@ -1,7 +1,7 @@
 class ViewersController < ApplicationController  
-  before_filter :authenticate_user!, :except => [:present]
+  before_filter :authenticate_user!, :except => [:present, :map]
   before_filter :get_scope
-  before_filter :match_scope, :except => [:present]
+  before_filter :match_scope, :except => [:present, :map]
 
   def index
     @viewers = @user.viewers
@@ -18,6 +18,15 @@ class ViewersController < ApplicationController
       @destinations = @viewer.destinations
       @points = @viewer.points
     end
+  end
+
+  def map
+    @viewer = @user.viewers.find_by_link(params[:link])
+    @overlays = @viewer.overlays
+    @geofiles = @viewer.geofiles
+    @beginning = @viewer.beginning
+    @destinations = @viewer.destinations
+    @points = @viewer.points      
   end
 
   def show

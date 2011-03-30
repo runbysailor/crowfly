@@ -33,18 +33,34 @@
       map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(crowfly);
       
       var logo = document.createElement('DIV');
-      logo.innerHTML = '<img src="http://crowfly.co/system/logos/2/original/psc.png">';
+      logo.innerHTML = '<img src="http://crowfly.co<%= @viewer.logo.url %>">';
       map.controls[google.maps.ControlPosition.TOP_LEFT].push(logo);
       
-      var bounds = new google.maps.LatLngBounds(
-        new google.maps.LatLng(<%= @overlay.south %>, <%= @overlay.west %>),
-        new google.maps.LatLng(<%= @overlay.north %>, <%= @overlay.east %>)
-      );
-      var overlay = new google.maps.GroundOverlay('http://crowfly.co/system/images/6/original/cse60.png', bounds);
-      overlay.setMap(map);
+      <% @overlays.each do |o| %>
+        showOverlay_<%= o.id %>();
+      <% end %>
       
-      var geofile = new google.maps.KmlLayer('http://crowfly.co/system/kmls/2/original/haworth.kml', { preserveViewport: true });   
-      geofile.setMap(map);
+      <% @overlays.each do |o| %>
+        function showOverlay_<%= o.id %>() {
+          var bounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(<%= o.south %>, <%= o.west %>),
+            new google.maps.LatLng(<%= o.north %>, <%= o.east %>)
+          );
+          var overlay = new google.maps.GroundOverlay('http://crowfly.co<%= o.image.url %>', bounds);
+          overlay.setMap(map);
+        }
+      <% end %>
+      
+      <% @geofiles.each do |g| %>
+        showGeofile_<%= g.id %>();
+      <% end %>
+      
+      <% @geofiles.each do |g| %>
+        function showGeofile_<%= g.id %>() {
+          var geofile = new google.maps.KmlLayer('http://crowfly.co<%= g.kml.url %>', { preserveViewport: true });   
+          geofile.setMap(map);
+        }
+      <% end %>
       
       <% @points.each do |p| %>
         showPoint_<%= p.id %>();
@@ -96,7 +112,8 @@
 <body>
   <div id="wrapper">
     <div id="toolbar">
-      <%= render '/application/toolbar' %>
+    <%= render '/application/toolbar' %>
+    <div id="toggle">Switch to <%= link_to 'EARTH', '/' + @user.company_name + '/' + @viewer.link %></div>
       <div id="showbar">
         <div id='controls'>
           <form name="destinations" id="destinations" method="get">
