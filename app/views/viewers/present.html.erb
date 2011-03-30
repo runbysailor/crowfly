@@ -13,17 +13,13 @@
         if (google.earth.isInstalled()) {
           google.earth.createInstance('plugin', initCB, failureCB);
         } else {
-        alert("CrowFly is intended to be used with the Google Earth Plug-in. Please follow the instructions below, or click Switch to MAP if you prefer the basic map.");
-        google.earth.createInstance('plugin', initCB, failureCB);
-      }
-    } else {
+          alert("CrowFly is intended to be used with the Google Earth Plug-in. Please follow the instructions below, or click Switch to MAP if you prefer the basic map.");
+          google.earth.createInstance('plugin', initCB, failureCB);
+        }
+      } else {
         alert("CrowFly is intended to be used with the Google Earth Plug-in, which your browser does not support. Please consider downloading the latest version of the Google Chrome browser. Until then, you will be redirected to the basic Google Maps version of CrowFly.");
         location = "http://crowfly.co/<%= @user.company_name %>/<%= @viewer.link %>/map";
       }
-    }
-    
-    function failureCB(errorcode) {
-      alert("Error: " + errorcode + ". Please refresh your browser. If the issue persists, please contact admin@crowfly.co");
     }
     
     google.setOnLoadCallback(init);

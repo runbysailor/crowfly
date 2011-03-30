@@ -140,7 +140,8 @@ a:hover { color: #333; }
 }
 
 .point-content p, .point-image {
-  line-height: 1em;
+  font-size: 1.0em;
+  line-height: 1.0em;
 }
 
 .unformatted {
