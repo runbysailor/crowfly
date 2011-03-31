@@ -21,6 +21,9 @@
         location = "http://crowfly.co/<%= @user.company_name %>/<%= @viewer.link %>/map";
       }
     }
+
+    function failureCB() {
+    }
     
     google.setOnLoadCallback(init);
     
