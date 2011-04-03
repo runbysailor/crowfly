@@ -9,11 +9,13 @@ class PointsController < ApplicationController
     @points = @viewer.points    
   end
     
-  def new    
+  def new
+    @destinations = @viewer.destinations
     @point = @viewer.points.build(params[:point])    
   end
   
   def edit
+    @destinations = @viewer.destinations
     @point = @viewer.points.find(params[:id])
   end
 
@@ -22,7 +24,8 @@ class PointsController < ApplicationController
 
     if @point.save
       redirect_to(user_viewer_points_path, :notice => 'Point successfully created.')
-    else      
+    else
+      @destinations = @viewer.destinations
       render :action => "new"
     end      
   end
